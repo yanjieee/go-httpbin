@@ -184,6 +184,7 @@ func (h *HTTPBin) Handler() http.Handler {
 	mux.HandleFunc("/robots.txt", h.Robots)
 	mux.HandleFunc("/sse", h.SSE)
 	mux.HandleFunc("/status/{code}", h.Status)
+	mux.HandleFunc("/status/{code}/response-headers", h.Status)
 	mux.HandleFunc("/stream-bytes/{numBytes}", h.StreamBytes)
 	mux.HandleFunc("/stream/{numLines}", h.Stream)
 	mux.HandleFunc("/trailers", h.Trailers)

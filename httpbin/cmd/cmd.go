@@ -23,7 +23,7 @@ import (
 
 const (
 	defaultListenHost = "0.0.0.0"
-	defaultListenPort = 8080
+	defaultListenPort = 7788
 	defaultLogFormat  = "text"
 	defaultEnvPrefix  = "HTTPBIN_ENV_"
 

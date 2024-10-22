@@ -261,6 +261,13 @@ func createSpecialCases(prefix string) map[int]*statusCase {
 func (h *HTTPBin) Status(w http.ResponseWriter, r *http.Request) {
 	rawStatus := r.PathValue("code")
 
+	args := r.URL.Query()
+	for k, vs := range args {
+		for _, v := range vs {
+			w.Header().Add(k, v)
+		}
+	}
+
 	// simple case, specific status code is requested
 	if !strings.Contains(rawStatus, ",") {
 		code, err := parseStatusCode(rawStatus)
@@ -285,7 +292,9 @@ func (h *HTTPBin) Status(w http.ResponseWriter, r *http.Request) {
 func (h *HTTPBin) doStatus(w http.ResponseWriter, code int) {
 	// default to plain text content type, which may be overriden by headers
 	// for special cases
-	w.Header().Set("Content-Type", textContentType)
+	if w.Header().Get("Content-Type") == "" {
+		w.Header().Set("Content-Type", textContentType)
+	}
 	if specialCase, ok := h.statusSpecialCases[code]; ok {
 		for key, val := range specialCase.headers {
 			w.Header().Set(key, val)
