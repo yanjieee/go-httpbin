@@ -2650,17 +2650,20 @@ func TestStreamBytes(t *testing.T) {
 	okTests := []struct {
 		url                   string
 		expectedContentLength int
+		expectedHeaders       map[string]string
 	}{
-		{"/stream-bytes/256", 256},
-		{"/stream-bytes/256?chunk_size=1", 256},
-		{"/stream-bytes/256?chunk_size=256", 256},
-		{"/stream-bytes/256?chunk_size=7", 256},
+		{"/stream-bytes/256", 256, map[string]string{}},
+		{"/stream-bytes/256?chunk_size=1", 256, map[string]string{}},
+		{"/stream-bytes/256?chunk_size=256", 256, map[string]string{}},
+		{"/stream-bytes/256?chunk_size=7", 256, map[string]string{}},
 
 		// too-large chunk size is okay
-		{"/stream-bytes/256?chunk_size=512", 256},
+		{"/stream-bytes/256?chunk_size=512", 256, map[string]string{}},
 
 		// as is negative chunk size
-		{"/stream-bytes/256?chunk_size=-10", 256},
+		{"/stream-bytes/256?chunk_size=-10", 256, map[string]string{}},
+
+		{"/stream-bytes/256/response-headers?vary=Origin", 256, map[string]string{"Vary": "Origin"}},
 	}
 	for _, test := range okTests {
 		test := test
@@ -2675,6 +2678,10 @@ func TestStreamBytes(t *testing.T) {
 			assert.Header(t, resp, "Content-Length", "")
 			assert.DeepEqual(t, resp.TransferEncoding, []string{"chunked"}, "incorrect Transfer-Encoding header")
 			assert.BodySize(t, resp, test.expectedContentLength)
+
+			for key, want := range test.expectedHeaders {
+				assert.Header(t, resp, key, want)
+			}
 		})
 	}
 

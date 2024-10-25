@@ -872,6 +872,13 @@ func handleBytes(w http.ResponseWriter, r *http.Request, streaming bool) {
 		return
 	}
 
+	args := r.URL.Query()
+	for k, vs := range args {
+		for _, v := range vs {
+			w.Header().Add(k, v)
+		}
+	}
+
 	// Special case 0 bytes and exit early, since streaming & chunk size do not
 	// matter here.
 	if numBytes == 0 {
